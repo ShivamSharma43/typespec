@@ -37,6 +37,7 @@ export interface CodeModelType {
 
 /** The subset of the emitted code model that the emitter tests assert against. */
 export interface CodeModel {
+  namespace: string;
   clients: unknown[];
   types: CodeModelType[];
 }

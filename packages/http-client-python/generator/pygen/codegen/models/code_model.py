@@ -213,6 +213,11 @@ class CodeModel:  # pylint: disable=too-many-public-methods, disable=too-many-in
             if len(self._client_namespace_types.keys()) > 1:
                 self.has_subnamespace = True
 
+            # nothing to generate (e.g. a service with only empty interfaces): still lay out the package namespace
+            # so packaging files and top level files are written
+            if not self._client_namespace_types:
+                self._client_namespace_types[self.namespace] = ClientNamespaceType()
+
             # insert namespace to make sure it is continuous(e.g. ("", "azure", "azure.mgmt", "azure.mgmt.service"))
             longest_namespace = sorted(self._client_namespace_types.keys())[-1]
             namespace_parts = longest_namespace.split(".")

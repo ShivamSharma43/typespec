@@ -11,6 +11,21 @@ it("targets the service namespace when no SDK clients are found", async () => {
   expectDiagnostics(diagnostics, []);
 });
 
+it("uses the service namespace as the package namespace when there is nothing to emit", async () => {
+  const { codeModel, diagnostics } = await emitCodeModel(`
+    #suppress "@typespec/http-client-python/no-sdk-clients" "This service intentionally has no client."
+    @service
+    namespace EmployeeManagement {
+      interface EmployeeAPI {}
+    }
+  `);
+
+  expectDiagnostics(diagnostics, []);
+  expect(codeModel.clients).toHaveLength(0);
+  expect(codeModel.types.some((type) => type.type === "model")).toBe(false);
+  expect(codeModel.namespace).toBe("employeemanagement");
+});
+
 it("generates models when no service exists", async () => {
   const { codeModel, diagnostics } = await emitCodeModel(`
     import "@azure-tools/typespec-client-generator-core";

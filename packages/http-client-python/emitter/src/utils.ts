@@ -13,7 +13,7 @@ import type {
   SdkType,
 } from "@azure-tools/typespec-client-generator-core";
 import { InitializedByFlags } from "@azure-tools/typespec-client-generator-core";
-import { getNamespaceFullName } from "@typespec/compiler";
+import { getNamespaceFullName, listServices } from "@typespec/compiler";
 import type { Token } from "marked";
 import { marked } from "marked";
 import type { PythonSdkContext } from "./lib.js";
@@ -297,6 +297,11 @@ export function getRootNamespace(context: PythonSdkContext): string {
     return context.sdkPackage.clients[0].namespace.toLowerCase();
   } else if (context.sdkPackage.namespaces.length > 0) {
     return context.sdkPackage.namespaces[0].fullName.toLowerCase();
+  }
+  // nothing to emit (e.g. a service with only empty interfaces): fall back to the service namespace
+  const service = listServices(context.program)[0];
+  if (service) {
+    return getNamespaceFullName(service.type).toLowerCase();
   }
   return "";
 }
